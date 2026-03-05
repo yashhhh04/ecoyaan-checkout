@@ -16,33 +16,36 @@ The goal of this assignment is to demonstrate understanding of:
 ## 🚀 Live Demo
 
 Deployed application: https://ecoyaan-checkout-demo.vercel.app/
-(Add your deployed Vercel link here)
+
 
 ---
 
 ## 📂 Project Structure
 
 ```
-ecoyaan-checkout
+ecoyaan-checkout/
+├── pages/
+│   ├── api/
+│   │   └── cart.js              # Mock API route — returns cart data for SSR
+│   ├── _app.js                  # Wraps app with CheckoutProvider for shared state
+│   ├── _document.js             # Sets page title and meta tags
+│   ├── index.js                 # Cart screen — SSR data fetch via getServerSideProps
+│   ├── checkout.js              # Shipping address form with validation
+│   ├── payment.js               # Payment method selection + order review
+│   └── success.js               # Order confirmed screen
 │
-├── pages
-│   ├── index.js            # Cart / Order Summary page (SSR)
-│   ├── checkout.js         # Shipping Address form
-│   ├── payment.js          # Payment confirmation page
-│   ├── success.js          # Order success page
-│   │
-│   └── api
-│       └── cart.js         # Mock API returning cart data
+├── components/
+│   ├── StepsBar.js              # Reusable progress indicator (Cart → Address → Payment → Done)
+│   ├── CartItem.js              # Single product row with image, name, qty, price
+│   ├── PriceSummary.js          # Subtotal, shipping, discount and total breakdown
+│   ├── AddressForm.js           # Address form with real-time validation
+│   └── OrderSummary.js          # Combined items + address review on payment page
 │
-├── components              # Reusable UI components
+├── context/
+│   └── CheckoutContext.js       # Global state — cart, address, step via Context API
 │
-├── context
-│   └── CheckoutContext.js  # Global state management
-│
-├── styles
-│   └── globals.css
-│
-└── package.json
+└── styles/
+    └── globals.css              # Base styles and CSS resets
 ```
 
 ---
