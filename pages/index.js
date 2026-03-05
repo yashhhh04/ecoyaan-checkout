@@ -1,78 +1,117 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useRouter } from "next/router";
+import { useCheckout } from "../context/CheckoutContext";
+import CartItem from "../components/CartItem";
+import PriceSummary from "../components/PriceSummary";
 
 export default function Home() {
+  const { cart, subtotal, total } = useCheckout();
+  const router = useRouter();
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ minHeight: "100vh", background: "#f5f0e8" }}>
+      {/* Header */}
+      <header style={{
+        background: "#2d5a27", padding: "16px 24px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+      }}>
+        <div style={{ fontFamily: "Georgia, serif", fontSize: 26, color: "#f5f0e8" }}>
+          eco<span style={{ color: "#a8d5a0", fontStyle: "italic" }}>yaan</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <div style={{ fontSize: 12, color: "#a8d5a0", letterSpacing: 2, textTransform: "uppercase" }}>
+          Secure Checkout
+        </div>
+      </header>
+
+      {/* Steps */}
+      <div style={{ background: "#ede5d4", padding: "16px 24px", display: "flex", gap: 8, alignItems: "center", justifyContent: "center" }}>
+        {["Cart", "Address", "Payment", "Done"].map((s, i) => (
+          <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: "50%", display: "flex",
+              alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600,
+              background: i === 0 ? "white" : "transparent",
+              color: i === 0 ? "#2d5a27" : "#999",
+              border: i === 0 ? "2px solid #2d5a27" : "2px solid #ccc",
+            }}>
+              {i + 1}
+            </div>
+            <span style={{ fontSize: 12, color: i === 0 ? "#2d5a27" : "#999", fontWeight: i === 0 ? 600 : 400 }}>{s}</span>
+            {i < 3 && <div style={{ width: 32, height: 2, background: "#ccc" }} />}
+          </div>
+        ))}
+      </div>
+
+      {/* Cart */}
+      <main style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
+        <div style={{ background: "white", borderRadius: 16, boxShadow: "0 4px 24px rgba(45,90,39,0.10)", overflow: "hidden" }}>
+          <div style={{ background: "#e8f0e6", padding: "18px 24px", borderBottom: "1px solid #d8e8d5" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: 22, color: "#2d5a27", fontWeight: 600 }}>Your Cart</div>
+                <div style={{ fontSize: 13, color: "#6b6b6b" }}>{cart.cartItems.length} items, thoughtfully chosen</div>
+              </div>
+              <span style={{
+                background: "#e8f0e6", border: "1px solid #c8ddc5",
+                padding: "4px 10px", borderRadius: 20, fontSize: 11,
+                fontWeight: 600, color: "#2d5a27",
+              }}>🌱 Eco Picks</span>
+            </div>
+          </div>
+
+          <div style={{ padding: "20px 24px" }}>
+            {cart.cartItems.map((item) => (
+              <CartItem key={item.product_id} item={item} />
+            ))}
+
+            <PriceSummary
+              subtotal={subtotal}
+              shippingFee={cart.shipping_fee}
+              discount={cart.discount_applied}
+              total={total}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <button
+              onClick={() => router.push("/checkout")}
+              style={{
+                width: "100%", marginTop: 20, padding: 16,
+                background: "#2d5a27", color: "white", border: "none",
+                borderRadius: 8, fontSize: 15, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Proceed to Checkout →
+            </button>
+
+            <div style={{ textAlign: "center", fontSize: 12, color: "#6b6b6b", marginTop: 10 }}>
+              🔒 Secure 256-bit SSL · Free returns · Planet-friendly packaging
+            </div>
+          </div>
         </div>
       </main>
     </div>
   );
+}
+
+// SSR — fetches cart data on the server before page loads
+export async function getServerSideProps(context) {
+  const protocol = context.req.headers["x-forwarded-proto"] || "http";
+  const host = context.req.headers.host;
+
+  try {
+    const res = await fetch(`${protocol}://${host}/api/cart`);
+    const cartData = await res.json();
+    return { props: { cartData } };
+  } catch (error) {
+    return {
+      props: {
+        cartData: {
+          cartItems: [
+            { product_id: 101, product_name: "Bamboo Toothbrush (Pack of 4)", product_price: 299, quantity: 2, emoji: "🪥" },
+            { product_id: 102, product_name: "Reusable Cotton Produce Bags", product_price: 450, quantity: 1, emoji: "🛍️" },
+          ],
+          shipping_fee: 50,
+          discount_applied: 0,
+        },
+      },
+    };
+  }
 }
