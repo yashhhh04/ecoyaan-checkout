@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useCheckout } from "../context/CheckoutContext";
 import CartItem from "../components/CartItem";
 import PriceSummary from "../components/PriceSummary";
+import StepsBar from "../components/Stepsbar";
 
 export default function Home() {
   const { cart, subtotal, total } = useCheckout();
@@ -9,7 +10,6 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f0e8" }}>
-      {/* Header */}
       <header style={{
         background: "#2d5a27", padding: "16px 24px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -22,26 +22,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Steps */}
-      <div style={{ background: "#ede5d4", padding: "16px 24px", display: "flex", gap: 8, alignItems: "center", justifyContent: "center" }}>
-        {["Cart", "Address", "Payment", "Done"].map((s, i) => (
-          <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: "50%", display: "flex",
-              alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600,
-              background: i === 0 ? "white" : "transparent",
-              color: i === 0 ? "#2d5a27" : "#999",
-              border: i === 0 ? "2px solid #2d5a27" : "2px solid #ccc",
-            }}>
-              {i + 1}
-            </div>
-            <span style={{ fontSize: 12, color: i === 0 ? "#2d5a27" : "#999", fontWeight: i === 0 ? 600 : 400 }}>{s}</span>
-            {i < 3 && <div style={{ width: 32, height: 2, background: "#ccc" }} />}
-          </div>
-        ))}
-      </div>
+      <StepsBar current={0} />
 
-      {/* Cart */}
       <main style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
         <div style={{ background: "white", borderRadius: 16, boxShadow: "0 4px 24px rgba(45,90,39,0.10)", overflow: "hidden" }}>
           <div style={{ background: "#e8f0e6", padding: "18px 24px", borderBottom: "1px solid #d8e8d5" }}>
@@ -62,14 +44,12 @@ export default function Home() {
             {cart.cartItems.map((item) => (
               <CartItem key={item.product_id} item={item} />
             ))}
-
             <PriceSummary
               subtotal={subtotal}
               shippingFee={cart.shipping_fee}
               discount={cart.discount_applied}
               total={total}
             />
-
             <button
               onClick={() => router.push("/checkout")}
               style={{
@@ -80,7 +60,6 @@ export default function Home() {
             >
               Proceed to Checkout →
             </button>
-
             <div style={{ textAlign: "center", fontSize: 12, color: "#6b6b6b", marginTop: 10 }}>
               🔒 Secure 256-bit SSL · Free returns · Planet-friendly packaging
             </div>
@@ -91,11 +70,9 @@ export default function Home() {
   );
 }
 
-// SSR — fetches cart data on the server before page loads
 export async function getServerSideProps(context) {
   const protocol = context.req.headers["x-forwarded-proto"] || "http";
   const host = context.req.headers.host;
-
   try {
     const res = await fetch(`${protocol}://${host}/api/cart`);
     const cartData = await res.json();
@@ -105,8 +82,8 @@ export async function getServerSideProps(context) {
       props: {
         cartData: {
           cartItems: [
-            { product_id: 101, product_name: "Bamboo Toothbrush (Pack of 4)", product_price: 299, quantity: 2, emoji: "🪥" },
-            { product_id: 102, product_name: "Reusable Cotton Produce Bags", product_price: 450, quantity: 1, emoji: "🛍️" },
+            { product_id: 101, product_name: "Bamboo Toothbrush (Pack of 4)", product_price: 299, quantity: 2, image: "via.placeholder.com/150" },
+            { product_id: 102, product_name: "Reusable Cotton Produce Bags", product_price: 450, quantity: 1, image: "via.placeholder.com/150" },
           ],
           shipping_fee: 50,
           discount_applied: 0,

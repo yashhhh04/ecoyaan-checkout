@@ -48,7 +48,8 @@ export default function AddressForm({ address, setAddress, onSubmit }) {
 
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      {/* repeat(auto-fit, minmax(200px, 1fr)) = 2 cols on desktop, 1 col on mobile automatically */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
         {FIELDS.map((field) => {
           const hasError = errors[field.key] && touched[field.key];
           return (

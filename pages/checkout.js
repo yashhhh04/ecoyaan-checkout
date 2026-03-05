@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useCheckout } from "../context/CheckoutContext";
 import AddressForm from "../components/AddressForm";
+import StepsBar from "../components/Stepsbar";
 
 export default function Checkout() {
   const { address, setAddress } = useCheckout();
@@ -8,7 +9,6 @@ export default function Checkout() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f0e8" }}>
-      {/* Header */}
       <header style={{
         background: "#2d5a27", padding: "16px 24px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -21,24 +21,7 @@ export default function Checkout() {
         </div>
       </header>
 
-      {/* Steps */}
-      <div style={{ background: "#ede5d4", padding: "16px 24px", display: "flex", gap: 8, alignItems: "center", justifyContent: "center" }}>
-        {["Cart", "Address", "Payment", "Done"].map((s, i) => (
-          <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: "50%", display: "flex",
-              alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600,
-              background: i === 0 ? "#2d5a27" : i === 1 ? "white" : "transparent",
-              color: i === 0 ? "white" : i === 1 ? "#2d5a27" : "#999",
-              border: i <= 1 ? "2px solid #2d5a27" : "2px solid #ccc",
-            }}>
-              {i === 0 ? "✓" : i + 1}
-            </div>
-            <span style={{ fontSize: 12, color: i === 1 ? "#2d5a27" : "#999", fontWeight: i === 1 ? 600 : 400 }}>{s}</span>
-            {i < 3 && <div style={{ width: 32, height: 2, background: i === 0 ? "#2d5a27" : "#ccc" }} />}
-          </div>
-        ))}
-      </div>
+      <StepsBar current={1} />
 
       <main style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
         <button
@@ -73,7 +56,6 @@ export default function Checkout() {
 export async function getServerSideProps(context) {
   const protocol = context.req.headers["x-forwarded-proto"] || "http";
   const host = context.req.headers.host;
-
   try {
     const res = await fetch(`${protocol}://${host}/api/cart`);
     const cartData = await res.json();
@@ -83,8 +65,8 @@ export async function getServerSideProps(context) {
       props: {
         cartData: {
           cartItems: [
-            { product_id: 101, product_name: "Bamboo Toothbrush (Pack of 4)", product_price: 299, quantity: 2, emoji: "🪥" },
-            { product_id: 102, product_name: "Reusable Cotton Produce Bags", product_price: 450, quantity: 1, emoji: "🛍️" },
+            { product_id: 101, product_name: "Bamboo Toothbrush (Pack of 4)", product_price: 299, quantity: 2, image: "via.placeholder.com/150" },
+            { product_id: 102, product_name: "Reusable Cotton Produce Bags", product_price: 450, quantity: 1, image: "via.placeholder.com/150" },
           ],
           shipping_fee: 50,
           discount_applied: 0,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { useCheckout } from "../context/CheckoutContext";
 import OrderSummary from "../components/OrderSummary";
+import StepsBar from "../components/Stepsbar";
 
 const PAYMENT_OPTIONS = [
   { id: "upi",        label: "UPI / Google Pay / PhonePe", icon: "📱" },
@@ -35,24 +36,7 @@ export default function Payment() {
         </div>
       </header>
 
-      {/* Steps */}
-      <div style={{ background: "#ede5d4", padding: "16px 24px", display: "flex", gap: 8, alignItems: "center", justifyContent: "center" }}>
-        {["Cart", "Address", "Payment", "Done"].map((s, i) => (
-          <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: "50%", display: "flex",
-              alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600,
-              background: i < 2 ? "#2d5a27" : i === 2 ? "white" : "transparent",
-              color: i < 2 ? "white" : i === 2 ? "#2d5a27" : "#999",
-              border: i <= 2 ? "2px solid #2d5a27" : "2px solid #ccc",
-            }}>
-              {i < 2 ? "✓" : i + 1}
-            </div>
-            <span style={{ fontSize: 12, color: i === 2 ? "#2d5a27" : "#999", fontWeight: i === 2 ? 600 : 400 }}>{s}</span>
-            {i < 3 && <div style={{ width: 32, height: 2, background: i < 2 ? "#2d5a27" : "#ccc" }} />}
-          </div>
-        ))}
-      </div>
+      <StepsBar current={2} />
 
       <main style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
         <button
