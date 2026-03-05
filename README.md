@@ -15,7 +15,7 @@ The goal of this assignment is to demonstrate understanding of:
 
 ## 🚀 Live Demo
 
-Deployed application:
+Deployed application: https://ecoyaan-checkout-demo.vercel.app/
 (Add your deployed Vercel link here)
 
 ---
