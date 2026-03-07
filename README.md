@@ -1,4 +1,4 @@
-# Ecoyaan Checkout Flow (Frontend Assignment)
+# Ecoyaan Checkout Flow 
 
 A simplified checkout flow built using **Next.js** and **React**.
 This project simulates a basic e-commerce checkout experience where users can review their cart, enter shipping details, and complete a mock payment.
