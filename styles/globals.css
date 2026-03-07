@@ -1,20 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+:root {
+  --forest: #1e3d1a;
+  --green: #2d5a27;
+  --green-mid: #4a7c42;
+  --green-light: #7aad72;
+  --green-pale: #eaf3e8;
+  --green-mist: #f2f7f1;
+  --cream: #faf7f2;
+  --cream-dark: #f0ebe0;
+  --sand: #e8e0d0;
+  --brown: #8a6a45;
+  --text: #1a1a1a;
+  --text-mid: #4a4a4a;
+  --text-muted: #8a8a8a;
+  --white: #ffffff;
+  --red: #c0392b;
+  --red-pale: #fef5f5;
+  --shadow-sm: 0 2px 8px rgba(30,61,26,0.08);
+  --shadow-md: 0 4px 20px rgba(30,61,26,0.12);
+  --shadow-lg: 0 8px 40px rgba(30,61,26,0.15);
+  --radius: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+}
+
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f0e8;
-  color: #1a1a1a;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-button {
-  font-family: inherit;
+button, input { font-family: inherit; }
+
+/* ── Page fade in ─────────────────────────── */
+.page-enter {
+  animation: pageIn 0.4s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-input {
-  font-family: inherit;
+/* ── Card ─────────────────────────────────── */
+.eco-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid rgba(30,61,26,0.06);
+}
+
+.eco-card-header {
+  background: linear-gradient(135deg, var(--green-pale) 0%, #dceeda 100%);
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(30,61,26,0.08);
+}
+
+.eco-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--forest);
+  letter-spacing: -0.3px;
+}
+
+.eco-card-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-weight: 400;
+}
+
+.eco-card-body { padding: 22px 24px; }
+
+/* ── Form inputs ──────────────────────────── */
+.eco-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--sand);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--cream);
+  transition: all 0.2s;
+  outline: none;
+  appearance: none;
+}
+
+.eco-input:focus {
+  border-color: var(--green-mid);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(74,124,66,0.1);
+}
+
+.eco-input.error {
+  border-color: var(--red);
+  background: var(--red-pale);
+}
+
+.eco-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.eco-error {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Buttons ──────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary:hover {
+  background: var(--forest);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(30,61,26,0.25);
+}
+
+.btn-primary:disabled {
+  background: var(--green-light);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-outline {
+  padding: 13px 20px;
+  background: transparent;
+  color: var(--green);
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-outline:hover {
+  background: var(--green-pale);
+}
+
+.btn-dashed {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  color: var(--green-mid);
+  border: 1.5px dashed var(--green-light);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-dashed:hover {
+  background: var(--green-mist);
+  border-color: var(--green-mid);
+  color: var(--green);
+}
+
+/* ── Badge ────────────────────────────────── */
+.eco-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(30,61,26,0.15);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Price rows ───────────────────────────── */
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text-mid);
+}
+
+.price-row-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--forest);
+  border-top: 1.5px solid var(--sand);
+  margin-top: 8px;
+}
+
+/* ── Trust row ────────────────────────────── */
+.trust-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Spinner ──────────────────────────────── */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Success animation ────────────────────── */
+@keyframes pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 560px) {
+  .eco-card-body { padding: 16px; }
+  .eco-card-header { padding: 16px; }
 }
