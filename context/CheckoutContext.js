@@ -22,36 +22,26 @@ export function CheckoutProvider({ children, initialCart }) {
   };
 
   // Address management with localStorage persistence
-  const [savedAddresses, setSavedAddresses] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("ecoyaan_addresses");
-        return stored ? JSON.parse(stored) : [];
-      } catch { return []; }
-    }
-    return [];
-  });
+  const [savedAddresses, setSavedAddresses] = useState([]);
+const [selectedAddressId, setSelectedAddressId] = useState(null);
+const [address, setAddress] = useState({ fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" });
 
-  const [selectedAddressId, setSelectedAddressId] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("ecoyaan_selected_address_id") || null;
+// Load from localStorage only on client after mount
+useEffect(() => {
+  try {
+    const stored = localStorage.getItem("ecoyaan_addresses");
+    const id = localStorage.getItem("ecoyaan_selected_address_id");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setSavedAddresses(parsed);
+      if (id) {
+        setSelectedAddressId(id);
+        const found = parsed.find(a => a.id === id);
+        if (found) setAddress(found);
+      }
     }
-    return null;
-  });
-
-  const [address, setAddress] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("ecoyaan_addresses");
-        const id = localStorage.getItem("ecoyaan_selected_address_id");
-        if (stored && id) {
-          const parsed = JSON.parse(stored);
-          return parsed.find(a => a.id === id) || { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" };
-        }
-      } catch {}
-    }
-    return { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" };
-  });
+  } catch {}
+}, []);
 
   useEffect(() => {
     if (savedAddresses.length > 0)
