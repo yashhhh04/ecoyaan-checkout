@@ -1,11 +1,13 @@
 import { useRouter } from "next/router";
+import { useCheckout } from "../context/CheckoutContext";
 import AddressForm from "../components/AddressForm";
 import StepsBar from "../components/Stepsbar";
-import Header from "../components/Header";
 import StickyBar from "../components/StickyBar";
+import Header from "../components/Header";
 
 export default function Checkout() {
   const router = useRouter();
+  const { selectedAddressId } = useCheckout();
 
   return (
     <div className="page-enter" style={{ minHeight: "100vh", background: "var(--cream)" }}>
@@ -24,7 +26,14 @@ export default function Checkout() {
         </div>
       </main>
 
-      <StickyBar backLabel="Back to Cart" backPath="/" />
+      {/* Both buttons together in sticky bar */}
+      <StickyBar
+        backLabel="Back to Cart"
+        backPath="/"
+        nextLabel="Continue to Payment"
+        onNext={() => router.push("/payment")}
+        nextDisabled={!selectedAddressId}
+      />
     </div>
   );
 }
@@ -36,7 +45,7 @@ export async function getServerSideProps(context) {
     const res = await fetch(`${protocol}://${host}/api/cart`);
     const cartData = await res.json();
     return { props: { cartData } };
-  } catch (error) {
+  } catch {
     return {
       props: {
         cartData: {

@@ -7,7 +7,7 @@ import StickyBar from "../components/StickyBar";
 import Header from "../components/Header";
 
 export default function Home() {
-  const { cart, subtotal, total } = useCheckout();
+  const { cartItems, subtotal, total, shippingFee, isFreeShipping } = useCheckout();
   const router = useRouter();
 
   return (
@@ -21,23 +21,24 @@ export default function Home() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <div className="eco-card-title">Your Cart</div>
-                <div className="eco-card-subtitle">{cart.cartItems.length} items, thoughtfully chosen</div>
+                <div className="eco-card-subtitle">{cartItems.length} items, thoughtfully chosen</div>
               </div>
               <span className="eco-badge">🌱 Eco Picks</span>
             </div>
           </div>
 
           <div className="eco-card-body">
-            {cart.cartItems.map((item) => (
+            {cartItems.map(item => (
               <CartItem key={item.product_id} item={item} />
             ))}
             <PriceSummary
               subtotal={subtotal}
-              shippingFee={cart.shipping_fee}
-              discount={cart.discount_applied}
+              shippingFee={shippingFee}
+              discount={0}
               total={total}
+              isFreeShipping={isFreeShipping}
             />
-            <div className="trust-row" style={{ marginTop: 20 }}>
+            <div className="trust-row" style={{ marginTop: 16 }}>
               <span>🔒 256-bit SSL</span>
               <span style={{ color: "var(--sand)" }}>·</span>
               <span>📦 Free returns</span>
@@ -63,7 +64,7 @@ export async function getServerSideProps(context) {
     const res = await fetch(`${protocol}://${host}/api/cart`);
     const cartData = await res.json();
     return { props: { cartData } };
-  } catch (error) {
+  } catch {
     return {
       props: {
         cartData: {

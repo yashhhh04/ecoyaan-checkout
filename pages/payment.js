@@ -13,7 +13,7 @@ const PAYMENT_OPTIONS = [
 ];
 
 export default function Payment() {
-  const { cart, address, subtotal, total } = useCheckout();
+  const { cart, cartItems, address, subtotal, total, shippingFee, isFreeShipping } = useCheckout();
   const [selected, setSelected] = useState("upi");
   const [paying, setPaying] = useState(false);
   const router = useRouter();
@@ -29,15 +29,14 @@ export default function Payment() {
       <StepsBar current={2} />
 
       <main style={{ maxWidth: 680, margin: "0 auto", padding: "28px 16px" }}>
-
-        {/* Payment Method — top */}
+        {/* Payment Method */}
         <div className="eco-card">
           <div className="eco-card-header">
             <div className="eco-card-title">Payment Method</div>
             <div className="eco-card-subtitle">Choose how you'd like to pay</div>
           </div>
           <div className="eco-card-body">
-            {PAYMENT_OPTIONS.map((opt) => (
+            {PAYMENT_OPTIONS.map(opt => (
               <div
                 key={opt.id}
                 onClick={() => setSelected(opt.id)}
@@ -62,9 +61,7 @@ export default function Payment() {
                   background: selected === opt.id ? "var(--green)" : "transparent",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}>
-                  {selected === opt.id && (
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "white" }} />
-                  )}
+                  {selected === opt.id && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "white" }} />}
                 </div>
               </div>
             ))}
@@ -83,7 +80,14 @@ export default function Payment() {
             <div className="eco-card-subtitle">Review your items and delivery details</div>
           </div>
           <div className="eco-card-body">
-            <OrderSummary cart={cart} subtotal={subtotal} total={total} address={address} />
+            <OrderSummary
+              cart={{ ...cart, cartItems }}
+              subtotal={subtotal}
+              total={total}
+              shippingFee={shippingFee}
+              isFreeShipping={isFreeShipping}
+              address={address}
+            />
           </div>
         </div>
       </main>
@@ -108,7 +112,7 @@ export async function getServerSideProps(context) {
     const res = await fetch(`${protocol}://${host}/api/cart`);
     const cartData = await res.json();
     return { props: { cartData } };
-  } catch (error) {
+  } catch {
     return {
       props: {
         cartData: {

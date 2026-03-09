@@ -3,92 +3,107 @@ import { createContext, useContext, useState, useEffect } from "react";
 const CheckoutContext = createContext(null);
 
 export function CheckoutProvider({ children, initialCart }) {
-  const [cart] = useState(initialCart);
+  // Cart items with quantity management
+  const [cartItems, setCartItems] = useState(initialCart.cartItems);
+  const shippingFee = initialCart.shipping_fee;
 
-  // Load saved addresses from localStorage on first render
-  const [savedAddresses, setSavedAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const increaseQty = (product_id) => {
+    setCartItems(prev => prev.map(item =>
+      item.product_id === product_id ? { ...item, quantity: item.quantity + 1 } : item
+    ));
+  };
 
-  // Current form address (for adding new)
-  const [address, setAddress] = useState({
-    fullName: "", email: "", phone: "",
-    pinCode: "", city: "", state: "",
+  const decreaseQty = (product_id) => {
+    setCartItems(prev => prev.map(item =>
+      item.product_id === product_id && item.quantity > 1
+        ? { ...item, quantity: item.quantity - 1 }
+        : item
+    ));
+  };
+
+  // Address management with localStorage persistence
+  const [savedAddresses, setSavedAddresses] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("ecoyaan_addresses");
+        return stored ? JSON.parse(stored) : [];
+      } catch { return []; }
+    }
+    return [];
+  });
+
+  const [selectedAddressId, setSelectedAddressId] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("ecoyaan_selected_address_id") || null;
+    }
+    return null;
+  });
+
+  const [address, setAddress] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("ecoyaan_addresses");
+        const id = localStorage.getItem("ecoyaan_selected_address_id");
+        if (stored && id) {
+          const parsed = JSON.parse(stored);
+          return parsed.find(a => a.id === id) || { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" };
+        }
+      } catch {}
+    }
+    return { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" };
   });
 
   useEffect(() => {
-    // Load persisted data from localStorage
-    try {
-      const storedAddresses = localStorage.getItem("ecoyaan_addresses");
-      const storedSelectedId = localStorage.getItem("ecoyaan_selected_address_id");
-      if (storedAddresses) {
-        const parsed = JSON.parse(storedAddresses);
-        setSavedAddresses(parsed);
-        // Auto-select the last selected address
-        if (storedSelectedId) {
-          setSelectedAddressId(storedSelectedId);
-          const found = parsed.find((a) => a.id === storedSelectedId);
-          if (found) setAddress(found);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load from localStorage", e);
-    }
-  }, []);
-
-  // Persist addresses to localStorage whenever they change
-  useEffect(() => {
-    if (savedAddresses.length > 0) {
+    if (savedAddresses.length > 0)
       localStorage.setItem("ecoyaan_addresses", JSON.stringify(savedAddresses));
-    }
   }, [savedAddresses]);
 
-  // Persist selected address id
   useEffect(() => {
-    if (selectedAddressId) {
+    if (selectedAddressId)
       localStorage.setItem("ecoyaan_selected_address_id", selectedAddressId);
-    }
   }, [selectedAddressId]);
 
-  // Save a new address to the list
   const saveAddress = (newAddress) => {
     const id = "addr_" + Date.now();
     const withId = { ...newAddress, id };
-    const updated = [...savedAddresses, withId];
-    setSavedAddresses(updated);
+    setSavedAddresses(prev => [...prev, withId]);
     setSelectedAddressId(id);
     setAddress(withId);
-    return id;
   };
 
-  // Select an existing saved address
   const selectAddress = (id) => {
     setSelectedAddressId(id);
-    const found = savedAddresses.find((a) => a.id === id);
+    const found = savedAddresses.find(a => a.id === id);
     if (found) setAddress(found);
   };
 
-  // Delete a saved address
   const deleteAddress = (id) => {
-    const updated = savedAddresses.filter((a) => a.id !== id);
+    const updated = savedAddresses.filter(a => a.id !== id);
     setSavedAddresses(updated);
     if (selectedAddressId === id) {
-      setSelectedAddressId(updated[0]?.id || null);
-      setAddress(updated[0] || { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" });
+      const next = updated[0] || null;
+      setSelectedAddressId(next?.id || null);
+      setAddress(next || { fullName: "", email: "", phone: "", pinCode: "", city: "", state: "" });
+      if (updated.length === 0) localStorage.removeItem("ecoyaan_addresses");
     }
-    if (updated.length === 0) localStorage.removeItem("ecoyaan_addresses");
   };
 
-  const subtotal = cart.cartItems.reduce(
-    (sum, item) => sum + item.product_price * item.quantity, 0
-  );
-  const total = subtotal + cart.shipping_fee - cart.discount_applied;
+  // Derived values
+  const subtotal = cartItems.reduce((sum, item) => sum + item.product_price * item.quantity, 0);
+  const isFreeShipping = subtotal >= 700;
+  const effectiveShipping = isFreeShipping ? 0 : shippingFee;
+  const total = subtotal + effectiveShipping;
 
   return (
     <CheckoutContext.Provider value={{
-      cart, address, setAddress,
+      cart: { ...initialCart, cartItems },
+      cartItems, increaseQty, decreaseQty,
+      address, setAddress,
       savedAddresses, selectedAddressId,
       saveAddress, selectAddress, deleteAddress,
       subtotal, total,
+      shippingFee: effectiveShipping,
+      isFreeShipping,
     }}>
       {children}
     </CheckoutContext.Provider>

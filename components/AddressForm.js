@@ -40,9 +40,7 @@ function AddressCard({ addr, isSelected, onSelect, onDelete }) {
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 5, color: "var(--text)" }}>
-            {addr.fullName}
-          </div>
+          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 5 }}>{addr.fullName}</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.7 }}>
             {addr.phone} &nbsp;·&nbsp; {addr.email}<br />
             {addr.city}, {addr.state} — {addr.pinCode}
@@ -53,25 +51,19 @@ function AddressCard({ addr, isSelected, onSelect, onDelete }) {
             <span style={{
               background: "var(--green)", color: "white",
               fontSize: 10, fontWeight: 700, padding: "3px 10px",
-              borderRadius: 20, letterSpacing: "0.5px",
-              textTransform: "uppercase",
-            }}>
-              ✓ Selected
-            </span>
+              borderRadius: 20, letterSpacing: "0.5px", textTransform: "uppercase",
+            }}>✓ Selected</span>
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(addr.id); }}
             style={{
               background: "transparent", border: "none",
               color: "var(--text-muted)", cursor: "pointer",
-              fontSize: 20, lineHeight: 1, padding: "0 2px",
-              transition: "color 0.2s",
+              fontSize: 20, lineHeight: 1, padding: "0 2px", transition: "color 0.2s",
             }}
-            onMouseOver={e => e.target.style.color = "var(--red)"}
-            onMouseOut={e => e.target.style.color = "var(--text-muted)"}
-          >
-            ×
-          </button>
+            onMouseOver={e => e.currentTarget.style.color = "var(--red)"}
+            onMouseOut={e => e.currentTarget.style.color = "var(--text-muted)"}
+          >×</button>
         </div>
       </div>
     </div>
@@ -94,12 +86,12 @@ export default function AddressForm({ onSubmit }) {
   };
 
   const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
+    setTouched(prev => ({ ...prev, [field]: true }));
     setErrors(validate(formData));
   };
 
   const handleSave = () => {
-    const allTouched = Object.fromEntries(FIELDS.map((f) => [f.key, true]));
+    const allTouched = Object.fromEntries(FIELDS.map(f => [f.key, true]));
     setTouched(allTouched);
     const errs = validate(formData);
     setErrors(errs);
@@ -113,49 +105,40 @@ export default function AddressForm({ onSubmit }) {
 
   return (
     <div>
-      {/* Saved addresses */}
       {savedAddresses.length > 0 && (
         <div style={{ marginBottom: 16 }}>
           <div style={{
             fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
             textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 10,
-          }}>
-            Saved Addresses
-          </div>
-          {savedAddresses.map((addr) => (
+          }}>Saved Addresses</div>
+          {savedAddresses.map(addr => (
             <AddressCard
-              key={addr.id}
-              addr={addr}
+              key={addr.id} addr={addr}
               isSelected={selectedAddressId === addr.id}
-              onSelect={selectAddress}
-              onDelete={deleteAddress}
+              onSelect={selectAddress} onDelete={deleteAddress}
             />
           ))}
         </div>
       )}
 
-      {/* Add new toggle */}
       {!showForm && (
         <button className="btn-dashed" onClick={() => setShowForm(true)} style={{ marginBottom: 8 }}>
           + Add New Address
         </button>
       )}
 
-      {/* New address form */}
       {showForm && (
         <div style={{
           background: "var(--cream)", borderRadius: "var(--radius-md)",
-          padding: 18, marginBottom: 8,
-          border: "1.5px solid var(--sand)",
+          padding: 18, marginBottom: 8, border: "1.5px solid var(--sand)",
         }}>
           <div style={{
             fontSize: 12, fontWeight: 700, color: "var(--green)",
             textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 14,
-          }}>
-            New Address
-          </div>
+          }}>New Address</div>
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
-            {FIELDS.map((field) => {
+            {FIELDS.map(field => {
               const hasError = errors[field.key] && touched[field.key];
               return (
                 <div key={field.key} style={{ gridColumn: field.full ? "1 / -1" : "auto" }}>
@@ -165,7 +148,7 @@ export default function AddressForm({ onSubmit }) {
                     type={field.type || "text"}
                     placeholder={field.placeholder}
                     value={formData[field.key]}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onChange={e => handleChange(field.key, e.target.value)}
                     onBlur={() => handleBlur(field.key)}
                   />
                   {hasError && <div className="eco-error">⚠ {errors[field.key]}</div>}
@@ -182,9 +165,7 @@ export default function AddressForm({ onSubmit }) {
                 color: "var(--text-muted)", border: "1.5px solid var(--sand)",
                 borderRadius: "var(--radius-sm)", fontSize: 13, fontWeight: 600, cursor: "pointer",
               }}
-            >
-              Cancel
-            </button>
+            >Cancel</button>
             <button
               onClick={handleSave}
               style={{
@@ -193,24 +174,12 @@ export default function AddressForm({ onSubmit }) {
                 fontSize: 13, fontWeight: 600, cursor: "pointer",
                 boxShadow: "0 4px 12px rgba(45,90,39,0.25)",
               }}
-            >
-              Save Address
-            </button>
+            >Save Address</button>
           </div>
         </div>
       )}
 
-      {/* Continue — disabled until address selected */}
-      <button
-        className="btn-primary"
-        onClick={() => selectedAddressId && onSubmit()}
-        disabled={!selectedAddressId}
-        style={{ marginTop: 8 }}
-      >
-        Continue to Payment →
-      </button>
-
-      {!selectedAddressId && (
+      {!selectedAddressId && !showForm && (
         <div style={{ textAlign: "center", fontSize: 12, color: "var(--text-muted)", marginTop: 8 }}>
           Please select or add a delivery address to continue
         </div>
